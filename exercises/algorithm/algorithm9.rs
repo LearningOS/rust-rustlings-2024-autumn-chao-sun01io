@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,6 +37,24 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        if self.items.is_empty() {
+            self.items.push(T::default()); // items[0] is not used
+        }
+
+        self.count += 1;
+        let mut bubble = self.count;
+        self.items.push(T::default());
+        self.items[0] = value; // index 0 as senitial
+                               // percolate up
+        loop {
+            if !(self.comparator)(&self.items[0], &self.items[self.parent_idx(bubble)]) {
+                break;
+            }
+            let parent = self.parent_idx(bubble);
+            self.items.swap(bubble, parent);
+            bubble = parent;
+        }
+        self.items.swap(bubble, 0);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +75,7 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+        0
     }
 }
 
@@ -85,7 +102,38 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        if self.is_empty() {
+            None
+        } else {
+            // percolate down
+
+            self.items.swap(1, self.count);
+            self.count -= 1;
+            let top = self.items.pop();
+            let mut bubble = 1;
+            loop {
+                let mut child;
+                let lchild = self.left_child_idx(bubble);
+                if lchild > self.count {
+                    break;
+                }
+                let rchild = self.right_child_idx(bubble);
+                if rchild <= self.count
+                    && (self.comparator)(&self.items[rchild], &self.items[lchild])
+                {
+                    child = rchild;
+                } else {
+                    child = lchild;
+                }
+                if (self.comparator)(&self.items[child], &self.items[bubble]) {
+                    self.items.swap(bubble, child);
+                } else {
+                    break;
+                }
+                bubble = child;
+            }
+            top
+        }
     }
 }
 
